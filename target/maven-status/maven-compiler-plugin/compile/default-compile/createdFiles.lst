@@ -1,0 +1,5 @@
+com\example\studentdb\service\StudentService.class
+com\example\studentdb\controller\StudentController.class
+com\example\studentdb\StudentdbApplication.class
+com\example\studentdb\repository\StudentRepository.class
+com\example\studentdb\model\Student.class

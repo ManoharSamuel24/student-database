@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Students Info</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+	  body {
+		background-color: #22272e; /* Darker background */
+		font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* Modern font */
+		color: #d4d4d8; /* Light grey text */
+		padding: 30px;
+		max-width: 800px;
+		margin: auto;
+		line-height: 1.6; /* Improved readability */
+	  }
+
+	  h1 {
+		text-align: center;
+		margin-bottom: 30px;
+		color: #5cc5ff; /* Modern blue accent */
+	  }
+
+	  section {
+		background-color: #2b303b; /* Slightly lighter section background */
+		border: 1px solid #3a404e; /* Subtle border */
+		border-radius: 8px; /* Softer rounded corners */
+		padding: 25px; /* Slightly increased padding */
+		margin-bottom: 20px;
+		box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15); /* Subtle shadow */
+	  }
+
+	  h3 {
+		margin-top: 0;
+		color: #5cc5ff;
+		margin-bottom: 15px; /* Added margin below heading */
+	  }
+
+	  .form-group {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 12px; /* Slightly increased gap */
+		margin-bottom: 20px;
+		align-items: center; /* Vertically align items */
+	  }
+
+	  input {
+		padding: 12px; /* Increased padding */
+		border: 1px solid #3a404e;
+		border-radius: 6px; /* Softer rounded corners */
+		flex: 1;
+		min-width: 180px; /* Slightly wider input */
+		background-color: #343a40; /* Darker input background */
+		color: #e9ecef; /* Lighter input text */
+		font-size: 1rem; /* Slightly larger font */
+	  }
+
+	  input:focus {
+		border-color: #5cc5ff;
+		outline: none;
+		box-shadow: 0 0 5px rgba(92, 197, 255, 0.5); /* Subtle focus shadow */
+	  }
+
+	  button {
+		background-color: #5cc5ff;
+		color: black;
+		border: none;
+		padding: 12px 24px; /* Increased padding */
+		border-radius: 6px; /* Softer rounded corners */
+		cursor: pointer;
+		font-weight: 500; /* Slightly bolder font weight */
+		transition: background-color 0.2s ease-in-out; /* Smoother transition */
+		font-size: 1rem;
+	  }
+
+	  button:hover {
+		background-color: #43a0d4; /* Darker hover color */
+	  }
+
+	  #getResult {
+		font-weight: 600; /* Bolder result text */
+		margin-top: 15px;
+		color: #5cc5ff;
+		font-size: 1.1rem;
+	  }
+
+	  table {
+		width: 100%;
+		border-collapse: collapse;
+		margin-top: 20px;
+	  }
+
+	  th,
+	  td {
+		border: 1px solid #3a404e;
+		padding: 12px;
+		text-align: left;
+	  }
+
+	  th {
+		background-color: #3a404e;
+		color: #5cc5ff;
+		font-weight: 500;
+	  }
+
+	  td {
+		background-color: #2b303b;
+		color: #d4d4d8;
+	  }
+	</style>
+
+
+
+
+</head>
+<body>
+
+    <h1>Student CRUD Operations</h1>
+
+    <!-- POST -->
+    <section>
+        <h3>Add Student</h3>
+        <div class="form-group">
+            <input type="text" id="postName" placeholder="Name">
+            <input type="number" id="postAge" placeholder="Age">
+            <input type="text" id="postCourse" placeholder="Course">
+        </div>
+        <button onclick="addStudent()">Add Student</button>
+    </section>
+
+    <!-- GET -->
+    <section>
+        <h3>Get Student by ID</h3>
+        <div class="form-group">
+            <input type="number" id="getId" placeholder="Student ID">
+            <button onclick="getStudent()">Get Student</button>
+        </div>
+        <div id="getResult"></div>
+    </section>
+
+    <!-- DELETE -->
+    <section>
+        <h3>Delete Student by ID</h3>
+        <div class="form-group">
+            <input type="number" id="deleteId" placeholder="Student ID">
+            <button onclick="deleteStudent()">Delete Student</button>
+        </div>
+    </section>
+
+    <!-- PUT -->
+    <section>
+        <h3>Update Student</h3>
+        <div class="form-group">
+            <input type="number" id="putId" placeholder="ID">
+            <input type="text" id="putName" placeholder="Name">
+            <input type="number" id="putAge" placeholder="Age">
+            <input type="text" id="putCourse" placeholder="Course">
+        </div>
+        <button onclick="updateStudent()">Update Student</button>
+    </section>
+
+    <!-- SHOW ALL -->
+    <section>
+        <h3>All Students</h3>
+        <button onclick="loadStudents()">Show All</button>
+        <table id="studentsTable" style="display:none;">
+            <thead>
+                <tr><th>ID</th><th>Name</th><th>Age</th><th>Course</th></tr>
+            </thead>
+            <tbody id="studentsBody"></tbody>
+        </table>
+    </section>
+
+    <script>
+        function addStudent() {
+            const student = {
+                name: document.getElementById('postName').value,
+                age: document.getElementById('postAge').value,
+                course: document.getElementById('postCourse').value
+            };
+            fetch('/students', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(student)
+            }).then(() => alert("Student added!"));
+        }
+
+        function getStudent() {
+            const idValue = document.getElementById('getId').value.trim();
+            if (idValue === "") {
+                alert("Please enter a valid ID");
+                return;
+            }
+            const id = parseInt(idValue);
+            fetch('/students/' + id)
+                .then(response => {
+                    if (!response.ok) {throw new Error("Student not found"); document.getElementById('getResult').innerText = "Student ID Not Found";}
+                    return response.json();
+                })
+                .then(data => {
+                    document.getElementById('getResult').innerText =
+                        `ID: ${data.id}, Name: ${data.name}, Age: ${data.age}, Course: ${data.course}`;
+                })
+                .catch(error => alert("Error: " + error.message));
+        }
+
+        function deleteStudent() {
+            const id = document.getElementById('deleteId').value;
+            fetch('/students/' + id, { method: 'DELETE' })
+                .then(() => alert("Student deleted (if existed)."));
+        }
+
+        function updateStudent() {
+            const id = document.getElementById('putId').value;
+            const updatedStudent = {
+                name: document.getElementById('putName').value,
+                age: document.getElementById('putAge').value,
+                course: document.getElementById('putCourse').value
+            };
+            fetch('/students/' + id, {
+                method: 'PUT',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(updatedStudent)
+            }).then(() => alert("Student updated (if existed)."));
+        }
+
+        function loadStudents() {
+            fetch('/students')
+                .then(response => response.json())
+                .then(data => {
+                    const table = document.getElementById('studentsTable');
+                    const body = document.getElementById('studentsBody');
+                    body.innerHTML = '';
+                    data.forEach(s => {
+                        body.innerHTML += `<tr>
+                            <td>${s.id}</td><td>${s.name}</td><td>${s.age}</td><td>${s.course}</td>
+                        </tr>`;
+                    });
+                    table.style.display = 'table';
+                });
+        }
+    </script>
+
+</body>
+</html>
